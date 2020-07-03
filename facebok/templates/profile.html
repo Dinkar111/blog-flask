@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container-md">
+        <div class='profile'>
+            {% for user in users %}
+                Username: {{ user[1] }}<br><br>
+                Email: {{ user[2] }}<br><br>
+                Phone: {{ user[4] }}<br><br>
+            {% endfor %}
+            {% for user in users %}
+            <a class="btn btn-info" href="{{ url_for('update_profile', user_id=user[0]) }}" role="button">Update Your Profile</a>
+            {% endfor %}
+        </div>
+    </div>
+  
+    <div class="container-md">
+        <div class="post-body">
+            {% for post in posts %}
+                <h1>{{ post[2] }}</h1><br>
+                <p>{{ post[1] }}</p><br>
+                <a class="btn btn-success btn-sm" href="{{ url_for('update', post_id=post[0])}}" role="button">Update Post</a>
+                <a class="btn btn-danger btn-sm" href="{{ url_for('delete', post_id=post[0])}}" role="button">Delete Post</a>
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
+
+        
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/login.css')}}">
+
+</head>
+<body>
+    <div class="login">
+        <div class="login-triangle"></div>
+        
+        <h2 class="login-header">Log in</h2>
+      
+        <form class="login-container" action="" method="POST">
+          <p><input type="text" placeholder="Username" name="username"></p>
+          <p><input type="password" placeholder="Password" name="password"></p>
+          <div class="msg">{{ msg }}</div>
+          <p><input type="submit" value="Sign In"></p>
+          <a href="{{ url_for('signup') }}">Sign up here</a>
+
+        </form>
+    </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <li>{{ message}}</li>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+</body>
+</html>
