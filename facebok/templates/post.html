@@ -5,8 +5,12 @@
     <div class="container">
         <fieldset>
             <legend>Create Post</legend>
-            <form class="post-form" action="" method="POST">
+            <form class="post-form" action="" method="POST" enctype="multipart/form-data">
                 <textarea class="title" name="title" placeholder="whats on your mind"></textarea>
+                <p class="custom-file">
+                    <input type="file" class="custom-file-input" name="post_image">
+                    <label class="custom-file-label" for="post_image">Post Image</label>
+                </p>
                 <input type="submit" value="Post">
             </form>
         </fieldset>

@@ -2,6 +2,8 @@ from flask import render_template, request, redirect, url_for, session, flash
 from functools import wraps
 from facebok import app,db
 import gc
+import os
+from werkzeug.utils import secure_filename
 
 def login_required(f):
     @wraps(f)
@@ -12,6 +14,19 @@ def login_required(f):
             flash("you need to login ")
             return redirect(url_for(index))
     return wrap
+
+
+def allowed_image(filename):
+    if not "." in filename:
+        return False
+
+    ext = filename.rsplit(".", 1)[1]
+
+    if ext.upper() in app.config['ALLOWED_IMAGE_EXTENSIONS']:
+        return True
+    else:
+        return False
+
 
 
 @app.route('/', methods=['GET','POST'])
@@ -66,7 +81,7 @@ def signup():
 @login_required
 def home():
     cur = db.cursor()
-    cur.execute(" SELECT posts.post_title, users.user_name FROM posts JOIN users ON users.user_id=posts.user_id ")
+    cur.execute(" SELECT posts.post_title,posts.post_image, users.user_name FROM posts JOIN users ON users.user_id=posts.user_id ")
     posts = cur.fetchall()
     return render_template('home.html', posts= posts, title='Home')
 
@@ -76,8 +91,18 @@ def home():
 def create_post():
     if request.method=='POST':
         title = request.form.get('title')
+        post_image = request.files.get('post_image')
+        if post_image.filename == "" :
+            print("Image must have file name")
+            return redirect(url_for('index'))
+        if not allowed_image(post_image.filename):
+            print("THAT NOT ALLOWED")
+            return redirect(url_for('index'))
+        else:
+            filename = secure_filename(post_image.filename)
+        post_image.save(os.path.join(app.config['IMAGE_UPLOADS'], filename))
         cur = db.cursor(dictionary=True,buffered=True)
-        cur.execute("INSERT INTO posts(post_title,user_id) VALUES (%s,%s)",(title,session['id']))
+        cur.execute("INSERT INTO posts(post_title,post_image,user_id) VALUES (%s,%s,%s)",(title,filename,session['id']))
         db.commit()
         cur.close()
         return redirect(url_for('home'))
@@ -95,7 +120,7 @@ PROFILE PAGE
 @login_required
 def profile():
     cur = db.cursor()
-    cur.execute(" SELECT posts.post_id, posts.post_title, users.user_name FROM posts JOIN users ON users.user_id=posts.user_id WHERE users.user_id='%s'",(session['id'],))
+    cur.execute(" SELECT posts.post_id, posts.post_title, posts.post_image, users.user_name FROM posts JOIN users ON users.user_id=posts.user_id WHERE users.user_id='%s'",(session['id'],))
     posts = cur.fetchall()
     cur.execute(" SELECT * FROM users WHERE users.user_id='%s'",(session['id'],) )
     users = cur.fetchall()
@@ -142,6 +167,9 @@ def delete(post_id):
     UPDATE PROFILE 
 '''
 
+
+
+
 @app.route('/updatepro/<user_id>', methods=['GET','POST'])
 @login_required
 def update_profile(user_id):
@@ -157,9 +185,19 @@ def update_profile(user_id):
         name = request.form.get('username')
         phone = request.form.get('phone')
         dob = request.form.get('date_birth')
-        profile_pic = request.form.get('profile_pic')
+        profile_pic = request.files.get('profile_pic')
+        if profile_pic.filename == "" :
+            print("Image must have gile name")
+            return redirect(url_for('index'))
+        if not allowed_image(profile_pic.filename):
+            print("THAT NOT ALLOWED")
+            return redirect(url_for('index'))
+        else:
+            filename = secure_filename(profile_pic.filename)
+        profile_pic.save(os.path.join(app.config['IMAGE_UPLOADS'], filename))
+
         cur = db.cursor()
-        cur.execute("UPDATE users SET user_name=%s, user_phone=%s, user_dob=%s, profile_image=%s WHERE user_id=%s",(name, phone, dob, profile_pic, user_id))
+        cur.execute("UPDATE users SET user_name=%s, user_phone=%s, user_dob=%s, profile_image=%s WHERE user_id=%s",(name, phone, dob, filename, user_id))
         db.commit()
         cur.close()
         return redirect(url_for('profile'))

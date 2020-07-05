@@ -3,9 +3,12 @@
 {% block content %}
     <div class="container">
         {% for post in posts %}
-            <h1>{{post[1] }}</h1><br>
-            <p>{{ post[0] }}</p><br><br><br>
-            <hr>
+            <div class="post-body">
+                <h1>{{post[2] }}</h1><br>
+                <img src="{{ url_for('static', filename='/img/uploads/'+ post[1])}}" style="height: 300px; width: 500px; border-radius: 2%; align-self: center;"><br><br>
+                <p>{{ post[0] }}</p><br><br><br>
+                <hr>
+            </div>
         {% endfor %}
     </div>
     

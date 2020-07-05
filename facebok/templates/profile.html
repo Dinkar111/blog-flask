@@ -3,6 +3,7 @@
 {% block content %}
     <div class="container-md">
         <div class='profile'>
+            <img src="{{ url_for('static', filename='/img/uploads/'+ users[0][6])}}" style="height: 100px; width: 100px; border-radius: 50%; align-self: center;"><br><br>
             {% for user in users %}
                 Username: {{ user[1] }}<br><br>
                 Email: {{ user[2] }}<br><br>
@@ -15,15 +16,16 @@
     </div>
   
     <div class="container-md">
-        <div class="post-body">
-            {% for post in posts %}
-                <h1>{{ post[2] }}</h1><br>
+        {% for post in posts %}
+            <div class="post-body">
+                <h1>{{ post[3] }}</h1><br>
+                <img src="{{ url_for('static', filename='/img/uploads/'+ post[2])}}" style="height: 300px; width: 500px; border-radius: 2%; align-self: center;"><br><br>
                 <p>{{ post[1] }}</p><br>
                 <a class="btn btn-success btn-sm" href="{{ url_for('update', post_id=post[0])}}" role="button">Update Post</a>
                 <a class="btn btn-danger btn-sm" href="{{ url_for('delete', post_id=post[0])}}" role="button">Delete Post</a>
                 <hr>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
 
         
